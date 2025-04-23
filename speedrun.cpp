@@ -1,4 +1,7 @@
 // judul : mesin gerbong kereta pointer single linked list
+// Farros A11.2024.15694
+// 24-04-2025 || Paper Plane Project
+// Repo : https://github.com/Elnathz/singlelinkedlist-homemade.git
 #include <iostream>
 using namespace std;
 
@@ -92,11 +95,13 @@ class singleLinkedList
         if(head == nullptr)
         {
             head = tail = newNode;
+            cout << "data berhasil ditambahkan \n \n";
         }
         else 
         {
             newNode->setNext(head);
             head = newNode;
+            cout << "data berhasil ditambahkan \n \n";
         }
     }
 
@@ -137,15 +142,40 @@ class singleLinkedList
         }
     }
 
+    void deleteHead()
+    {
+        nodePntr pembuangan = head;
+        head = head->getnext();
+        delete pembuangan;
+    }
+
+    void deleteAfter(char tujuanNode)
+    {
+        nodePntr current = head;
+        while(current != nullptr)
+        {
+            if(current->getData() == tujuanNode)
+            {
+                nodePntr pembuangan = current->getnext();
+                current = pembuangan->getnext();
+                delete pembuangan;
+                cout << "data berhasil dihapus";
+            }
+        }
+    }
 };
 
 // procedure
-void menuTampilan();
 void ketentuanInsert(int totalNode);
-void menuInserFirst(int totalNode, char value);
-void menuInsertAfter(int totalNode, char value);
+void ketentuanDelete(int totalNode);
+void menuTampilan();
+void menuInsertFirst(int totalNode, char value);
+void menuInsertAfter(int totalNode, char value, char tujuanNode);
 void menuInsertLast(int totalNode, char value);
+void menuDeleteHead(int totalNode);
 void menuPrintList();
+
+// function
 
 singleLinkedList sLL;
 bool mainMachine;
@@ -167,17 +197,24 @@ int main()
         switch (pilihan)
         {
             case 1: // insert Head
-                menuInserFirst(totalNode, value);
+                menuInsertFirst(totalNode, value);
                 break;
-
+    
             case 2: // insert after
-                menuInsertAfter(totalNode, value);
+                menuInsertAfter(totalNode, value, tujuanNode);
                 break;
-            
-            case 3: // insert last
+                
+            case 3: // insert tail
                 menuInsertLast(totalNode, value);
                 break;
 
+            case 4: // delete head
+                menuDeleteHead(totalNode);
+                break;
+                
+            case 5: // delete after
+                menuDeleteAfter(totalNode, tujuanNode);
+                break;
             case 7: // printlist
                 menuPrintList();
                 break;
@@ -195,6 +232,11 @@ int main()
 }
 
 // function
+void menuPrintList()
+{
+    sLL.printList();
+    cout << endl;
+}
 
 void menuTampilan()
 {
@@ -213,10 +255,11 @@ void menuTampilan()
 
 void ketentuanInsert(int totalNode)
 {
-    if(totalNode >= 4)
+    if(totalNode > 4)
     {
-        cout << "kakehan woi \n";
+        cout << "kakehan woi";
         cout << endl;
+        return;
     }
 }
 
@@ -225,22 +268,26 @@ void ketentuanDelete(int totalNode)
     if(totalNode == 0)
     {
         cout << "gaono seng iso dihapus le";
+        cout << endl;
+        return;
     }
-    cout << endl;
 }
 
-void menuInserFirst(int totalNode, char value)
+void menuInsertFirst(int totalNode, char value)
 {
     ketentuanInsert(totalNode);
-    cout << "Masukkan Data (character) : ";
-    cin >> value;
-    sLL.insertHead(value);
+    if(totalNode <=3)
+    {
+        cout << "Masukkan Data (character) : ";
+        cin >> value;
+        sLL.insertHead(value);
+    }
 }
 
-void menuInsertAfter(int totalNode, char value)
+void menuInsertAfter(int totalNode, char value, char tujuanNode)
 {
     ketentuanInsert(totalNode);
-    if(totalNode > 0)
+    if(totalNode > 0 && totalNode <= 3)
     {
         sLL.printList();
         cout << endl;
@@ -261,13 +308,36 @@ void menuInsertAfter(int totalNode, char value)
 void menuInsertLast(int totalNode, char value)
 {
     ketentuanInsert(totalNode);
-    cout << "Masukkan Data (character) : ";
-    cin >> value;
-    sLL.insertLast(value);
+    if (totalNode <=3)
+    {
+        cout << "Masukkan Data (character) : ";
+        cin >> value;
+        sLL.insertLast(value);
+    }
 }
 
-void menuPrintList()
+void menuDeleteHead(int totalNode)
 {
-    sLL.printList();
-    cout << endl;
+    ketentuanDelete(totalNode);
+    if (totalNode > 0)
+    {
+        sLL.deleteHead();
+        menuPrintList();
+    }
+}
+
+void menuDeleteAfter(int totalNode, char tujuanNode)
+{
+    ketentuanDelete(totalNode);
+    if(totalNode > 0)
+    {
+        sLL.printList();
+        cout << endl;
+        cout << "Mau menghapus setelah Node dengan data apa? \n";
+        cout << "input : ";
+        cin >> tujuanNode;
+        sLL.deleteAfter(tujuanNode);
+        cout << endl;
+        sLL.printList();
+    }
 }
