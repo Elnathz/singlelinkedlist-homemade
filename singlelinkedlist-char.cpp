@@ -41,6 +41,7 @@ class Node
 };
 
 typedef Node* nodePntr;
+
 class singleLinkedList
 {
     protected:
@@ -61,9 +62,10 @@ class singleLinkedList
         }
         else
         {
-            cout << endl;
             cout << "Isi Linked List \n";
             cout << "'data[currentAddr] -> [nextaddr]'  \n \n";
+            cout << "Head : " << head->getData() << "[" << head << "]" << endl;
+            cout << "Tail : " << tail->getData() << "[" << tail << "]" << endl << endl;
 
             nodePntr current = head;
             while(current != nullptr)
@@ -77,16 +79,16 @@ class singleLinkedList
 
     int totalNode()
     {
-        int totalNode = 0;
+        int total = 0;
         nodePntr current = head;
 
         while(current != nullptr)
         {
-            totalNode++;
+            total++;
             current = current->getnext();
         }
 
-        return totalNode;
+        return total;
     }
 
     void insertHead(char value)
@@ -95,13 +97,13 @@ class singleLinkedList
         if(head == nullptr)
         {
             head = tail = newNode;
-            cout << "data berhasil ditambahkan \n \n";
+            cout << "Data berhasil ditambahkan! \n \n";
         }
         else 
         {
             newNode->setNext(head);
             head = newNode;
-            cout << "data berhasil ditambahkan \n \n";
+            cout << "Data berhasil ditambahkan! \n \n";
         }
     }
 
@@ -113,33 +115,38 @@ class singleLinkedList
             if(current->getData() == tujuanNode)
             {
                 nodePntr newNode = new Node(value);
+                if(current->getnext() == nullptr)
+                {
+                    tail = newNode;
+                }
                 newNode->setNext(current->getnext());
                 current->setNext(newNode);
-                cout << "sukses dibuat \n \n";
+                cout << "Data berhasil ditambahkan! \n \n";
                 return;
             }
             current = current->getnext();
         }
         if(current == nullptr)
         {
-            cout << "Tujuan Data Node tidak ada, tolong masukkan yang benar. \n";
+            cout << "Tujuan data node tidak ada, tolong masukkan yang benar!" << endl << endl;
         }
     }
 
     void insertLast(char value)
     {
         nodePntr current = head;
+        nodePntr newNode = new Node(value);
+
         if(head == nullptr)
         {
-            head = tail = new Node(value);
+            head = tail = newNode;
         }
         else
         {
-            nodePntr newNode = new Node(value);
-            newNode->setNext(tail->getnext());
             tail->setNext(newNode);
             tail = newNode;
         }
+        cout << "Node berhasil ditambahkan!" << endl;
     }
 
     void deleteHead()
@@ -154,6 +161,7 @@ class singleLinkedList
             head = head->getnext();
         }
         delete pembuangan;
+        cout << "Node berhasil dihapus!" << endl << endl;
     }
 
     void deleteAfter(char tujuanNode)
@@ -165,38 +173,48 @@ class singleLinkedList
             {
                 nodePntr pembuangan = current->getnext();
                 current->setNext(pembuangan->getnext());
+                if(pembuangan == nullptr)
+                {
+                    cout << "Tidak ada node setelah \"" << tujuanNode << "\", penghapusan Node gagal!" << endl << endl;
+                    return;
+                }
+                else if(pembuangan == tail)
+                {
+                    tail = current;
+                }
                 delete pembuangan;
-                cout << "data berhasil dihapus";
+                cout << "Node setelah \"" << tujuanNode << "\" berhasil dihapus!" << endl;
+                cout << "Isi Node Setelah dihapus: " << endl;
+                return;
             }
             current = current->getnext();
+            if(current == nullptr)
+            {
+                cout << "Node dengan data \"" << tujuanNode << "\" tidak ditemukan!" << endl << endl;
+                return;
+            }
         }
     }
 
     void DeleteLast()
     {
-        nodePntr pembuangan = head;
         if(head == tail)
         {
-            delete pembuangan;
+            delete head;
             head = tail = nullptr;
-            cout << "Data berhasil dihapus " << endl;
+            cout << "Node berhasil dihapus!" << endl;
         }
         else
         {
-            while(pembuangan != nullptr)
+            nodePntr current = head;
+            while(current->getnext() != tail)
             {
-                if(pembuangan->getnext() != tail)
-                {
-                    pembuangan = pembuangan->getnext();
-                }
-                else
-                {
-                    delete tail;
-                    tail = pembuangan;
-                    pembuangan->setNext(nullptr);
-                    cout << "Data terakhir berhasil dihapus." << endl;
-                }
+                current = current->getnext();
             }
+            delete tail;
+            tail = current;
+            current->setNext(nullptr);
+            cout << "Node terakhir berhasil dihapus!" << endl;
         }
     }
 };
@@ -216,6 +234,7 @@ void menuPrintList();
 
 // variable
 singleLinkedList sLL;
+
 bool mainMachine;
 int totalNode, pilihan;
 char value;
@@ -230,7 +249,6 @@ int main()
     {
         totalNode = sLL.totalNode();
         menuTampilan();
-        cin >> pilihan;
         pilihan = ketentuanGeneral(totalNode, pilihan);
         switch (pilihan)
         {
@@ -257,12 +275,13 @@ int main()
             case 6: // delete last
                 menuDeleteLast();
                 break;
+                
             case 7: // printlist
                 menuPrintList();
                 break;
 
             case 0:
-                cout << "Keluar Program \n";
+                cout << "Terima Kasih Telah Mencoba! \n";
                 mainMachine = false;
                 break;
 
@@ -284,7 +303,7 @@ void menuPrintList()
 
 void menuTampilan()
 {
-    cout << "--------------------------" << endl;
+    cout << "==========================" << endl;
     cout << "Menu Single Linked List" << endl;
     cout << "--------------------------" << endl;
     cout << "1. Insert Head"    << endl;
@@ -296,26 +315,33 @@ void menuTampilan()
     cout << "7. Print List"     << endl;
     cout << "0. Exit"           << endl << endl;
     cout << "Pilih (contoh 1): ";
+    cin >> pilihan;
+    cout << "========================== \n";
 }
 
 int ketentuanGeneral(int totalNode, int pilihan)
 {
     if(totalNode >= 4 && pilihan < 4 && pilihan > 0)
     {
-        cout << "kakehan woi (max 4, pilih delete or exit)";
-        cout << endl << endl;
+        cout << "Max untuk panjang node adalah 4!             " << endl;
+        cout << "Silahkan pilih menu Delete, Print, atau Exit." << endl << endl;
         return -1;
     }
-    else if(totalNode <= 0 && pilihan > 3 && pilihan <= 7)
+    else if(totalNode <= 0 && pilihan > 3 && pilihan < 7)
     {
-        cout << "gaono seng iso dihapus le";
-        cout << endl;
+        cout << "Tidak ada node yang bisa dihapus!" << endl;
+        cout << "Silahkan pilih menu Insert, Print, atau Exit." << endl << endl;
+        return -1;
+    }
+    else if(totalNode == 0 && pilihan == 2)
+    {
+        cout << "Tolong isi dulu untuk node awalnya menggunakan Insert Head/Insert Last!" << endl << endl;
         return -1;
     }
     else if(pilihan < 0 || pilihan > 7)
     {
-        cout << "tolong pilih menu yang ada! \n";
-        cout << endl;
+        cout << "Tidak ada pilihan menu " << pilihan << "!" << endl;
+        cout << "Tolong pilih menu antara 0-7 !" << endl << endl;
         return -1;
     }
     else 
@@ -341,7 +367,6 @@ void menuInsertAfter(char value, char tujuanNode)
     cout << "Masukkan data yang akan ditambahkan : ";
     cin >> value;
     sLL.insertAfter(tujuanNode, value);
-    cout << endl;
 }
 
 void menuInsertLast(char value)
@@ -349,11 +374,13 @@ void menuInsertLast(char value)
     cout << "Masukkan Data (character) : ";
     cin >> value;
     sLL.insertLast(value);
+    cout << endl;
 }
 
 void menuDeleteHead()
 {
     sLL.deleteHead();
+    cout << "Setelah dihapus : \n";
     menuPrintList();
 }
 
@@ -365,7 +392,7 @@ void menuDeleteAfter(char tujuanNode)
     cout << "input : ";
     cin >> tujuanNode;
     sLL.deleteAfter(tujuanNode);
-    cout << endl;
+    
     sLL.printList();
 }
 
